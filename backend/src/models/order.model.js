@@ -3,28 +3,22 @@ import mongoose, { Schema } from "mongoose"
 const orderSchema = new Schema ({
     customer: {
         type: mongoose.Types.ObjectId,
-        ref: "User"
+        ref: "User",
+        required: true
     },
     orderPrice: {
         type: Number,
         required: true
     },
-    items: {
-        type: [
-            {
-                productId: {
-                    type: mongoose.Types.ObjectId,
-                    ref: "Product"
-                },
-                quantity: {
-                    type: Number,
-                    min: [1, "Quantity cannot be less than 1"],
-                    default: 1,
-                    required: true
-                }
-            }
-        ],
-        default: []
+    items: [{
+        type: mongoose.Types.ObjectId,
+        ref: "Product",
+        required: true
+    }],
+    status: {
+        type: String,
+        enum: ["PENDING", "APPROVED", "DECLINED", "GATEWAY_ERROR"],
+        default: "PENDING"
     },
     address: {
         country: {
@@ -50,22 +44,48 @@ const orderSchema = new Schema ({
     },
     payment: {
         cardNumber: {
-            type: Number,
+            type: String,
             required: true
         },
         expiryDate: {
-            type: Number,
+            type: String,
             required: true
         },
-        securityCode: {
-            type: Number,
+        cvv: {
+            type: String,
             required: true
         },
         cardName: {
             type: String,
             required: true
+        },
+        status: {
+            type: String,
+            enum: ["PENDING", "APPROVED", "DECLINED", "GATEWAY_ERROR"],
+            default: "PENDING"
         }
     }
-}, { timestamps: true });
+}, { 
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
+});
+
+// Add virtual field for order total
+orderSchema.virtual('totalItems').get(function() {
+    return this.items.length;
+});
+
+// Add method to update order status
+orderSchema.methods.updateStatus = async function(status) {
+    this.status = status;
+    this.payment.status = status;
+    return await this.save();
+};
+
+// Add indexes for better query performance
+orderSchema.index({ customer: 1, status: 1 });
+orderSchema.index({ "payment.status": 1 });
+orderSchema.index({ createdAt: -1 });
 
 export const Order = mongoose.model("Order", orderSchema)

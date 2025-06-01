@@ -35,6 +35,10 @@ const productSchema = new Schema(
       type: Number,
       default: 0,
     },
+    inventoryCount: {
+      type: Number,
+      default: 0
+    },
     mainImage: {
         type: {
             url: String,
