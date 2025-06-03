@@ -13,7 +13,7 @@ const Navbar = () => {
         <div className="h-16 bg-blue-800 relative flex justify-center items-center gap-2">
         <button className="text-white border absolute left-2" onClick={() => setUploadProduct(true)}>Upload Product</button>
            <Link to="/landingPage">Home</Link>
-            <Link to="/products">Catalog</Link>
+            <Link to="/catalog">Catalog</Link>
 
             <div className="absolute right-5">
                 <Link to="/cart">Cart</Link>

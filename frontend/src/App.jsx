@@ -10,6 +10,8 @@ import PrivateRoute from "./components/PrivateRoute.jsx";
 import PublicRoute from "./components/PublicRoute.jsx";
 import Register from "./pages/Register.jsx";
 import { useAuth } from "./components/AuthContext.jsx";
+import Product from "./Product.jsx";
+import CheckoutPage from "./CheckoutPage.jsx";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -22,7 +24,17 @@ function App() {
       <Routes>
         <Route
           path="/"
-          element={token && user?._id ? <PrivateRoute><LandingPage /></PrivateRoute> :<PublicRoute><Login /></PublicRoute>}
+          element={
+            token && user?._id ? (
+              <PrivateRoute>
+                <LandingPage />
+              </PrivateRoute>
+            ) : (
+              <PublicRoute>
+                <Login />
+              </PublicRoute>
+            )
+          }
         ></Route>
 
         <Route
@@ -34,7 +46,7 @@ function App() {
           }
         ></Route>
         <Route
-          path="/checkout"
+          path="/catalog"
           element={
             <PrivateRoute>
               <Catalog />
@@ -65,9 +77,23 @@ function App() {
             </PrivateRoute>
           }
         ></Route>
-        <Route path="/products" element={<PrivateRoute><Catalog /></PrivateRoute>}>
+        <Route
+          path="/product/:productId"
+          element={
+            <PrivateRoute>
+              <Product />
+            </PrivateRoute>
+          }
+        ></Route>
 
-        </Route>
+        <Route
+          path="/checkout"
+          element={
+            <PrivateRoute>
+              <CheckoutPage />
+            </PrivateRoute>
+          }
+        ></Route>
       </Routes>
     </>
   );

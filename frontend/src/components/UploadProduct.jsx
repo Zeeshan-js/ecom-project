@@ -11,7 +11,7 @@ const UploadProduct = ({ open, onClose }) => {
     description: "",
     variant: {
       size: [],
-      color: [],
+      colors: [],
     },
     stock: 0,
     price: 0,
@@ -47,7 +47,7 @@ const UploadProduct = ({ open, onClose }) => {
       ...product,
       variant: {
         ...prev.variant,
-        color: [...prev.variant.color, color],
+        colors: [...prev.variant.colors, color],
       },
     }));
     setInputColor("")
@@ -61,8 +61,7 @@ const UploadProduct = ({ open, onClose }) => {
         ...prev,
         mainImage: file,
       }));
-      setCurrentImage(product.mainImage.url)
-      console.log(product.mainImage)
+      setCurrentImage(URL.createObjectURL(file))
     } else {
       console.log(file  )
     }
@@ -77,10 +76,9 @@ const UploadProduct = ({ open, onClose }) => {
     formData.append("price", product.price);
     formData.append("mainImage", product.mainImage); // File object
     formData.append("variant", JSON.stringify(product.variant));
-    // Add other fields as needed
 
     await uploadProduct(formData);
-    console.log(formData)
+    onClose()
   } catch (error) {
     console.log(error);
   }
@@ -217,7 +215,7 @@ const UploadProduct = ({ open, onClose }) => {
                             </button>
                           </div>
                           <div className="mt-2 flex gap-2 flex-wrap">
-                            {product.variant.color.map((cl, idx) => (
+                            {product.variant.colors.map((cl, idx) => (
                               <span
                                 key={idx}
                                 className="px-2 py-1 bg-gray-100 text-black rounded text-sm"
@@ -269,7 +267,7 @@ const UploadProduct = ({ open, onClose }) => {
 
                         {product.mainImage.url && (
                           <img
-                            src={URL.createObjectURL(product.mainImage.url)}
+                            src={currentImage}
                             alt="Main Preview"
                             className="mt-2 w-48 h-auto rounded shadow"
                           />

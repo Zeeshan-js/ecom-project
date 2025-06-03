@@ -103,45 +103,53 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     throw new ApiError(401, "Invalid token request");
   }
 
-  const decodedToken = jwt.verify(
-    incomingToken,
-    process.env.REFRESH_TOKEN_SECRET
-  );
-
-  if (!decodedToken) {
-    throw new ApiError(400, "Invalid token");
-  }
-
-  const user = await User.findById(decodedToken?._id);
-
-  if (!user) {
-    throw new ApiError(401, "Invalid user request");
-  }
-
-  if (incomingToken !== user?.refreshToken) {
-    throw new ApiError(401, "Token is invalid");
-  }
-
-  const { accessToken, newRefreshToken } = await generateAccessAndRefreshToken(
-    user._id
-  );
-
-  const options = {
-    httpOnly: true,
-    secure: true,
-  };
-
-  return res
-    .status(200)
-    .cookie("accessToken", accessToken, options)
-    .cookie("refreshToken", newRefreshToken, options)
-    .json(
-      new ApiResponse(
-        200,
-        { accessToken, refreshToken: newRefreshToken },
-        "Access token refreshed"
-      )
+  try {
+    const decodedToken = jwt.verify(
+      incomingToken,
+      process.env.REFRESH_TOKEN_SECRET
     );
+  
+    if (!decodedToken) {
+      throw new ApiError(400, "Invalid token");
+    }
+  
+    const user = await User.findById(decodedToken?._id);
+  
+    if (!user) {
+      throw new ApiError(401, "Invalid user request");
+    }
+  
+    if (incomingToken !== user?.refreshToken) {
+      throw new ApiError(401, "Token is invalid");
+    }
+  
+    
+    const { accessToken, newRefreshToken } = await generateAccessAndRefreshToken(
+      user._id
+    );
+  
+    user.refreshToken = newRefreshToken
+    await user.save()
+  
+    const options = {
+      httpOnly: true,
+      secure: true,
+    };
+  
+    return res
+      .status(200)
+      .cookie("accessToken", accessToken, options)
+      .cookie("refreshToken", newRefreshToken, options)
+      .json(
+        new ApiResponse(
+          200,
+          { accessToken, refreshToken: newRefreshToken },
+          "Access token refreshed"
+        )
+      );
+  } catch (error) {
+    throw new ApiError(401, error.message || "Invalid token request")
+  }
 });
 
 

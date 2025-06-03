@@ -24,9 +24,26 @@ const getAllProduct = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, products, "Product fetched successfully"));
 });
 
+const getProductById = asyncHandler(async (req, res) => {
+  const { productId } = req.params
+
+  const product = await Product.findById(productId)
+
+  if (!product) {
+    throw new ApiError(404, "Product does not exist")
+  }
+
+  return res.status(200).json(new ApiResponse(200, product, "Product fetched successfully"))
+
+})
+
 const createProduct = asyncHandler(async (req, res) => {
-  const { name, description, variant, stock, price, mainImage } = req.body;
+  let { name, description, variant, stock, price } = req.body;
   
+  if (typeof variant === "string") {
+    variant = JSON.parse(variant)
+  }
+
   const mainImageUrl = req.files?.mainImage[0]?.path
   
   if (!mainImageUrl) {
@@ -85,4 +102,4 @@ const deleteProduct = asyncHandler(async (req, res) => {
     return res.status(200).json(new ApiResponse(200, { deletedProduct: product }, "Product deleted successfully"))
 });
 
-export { createProduct, deleteProduct, getAllProduct }
+export { createProduct, deleteProduct, getAllProduct, getProductById }

@@ -32,6 +32,9 @@ const getCart = async (userId) => {
     {
       $group: {
         _id: "$_id",
+        items: {
+          $push: "$$ROOT"
+        },
         cartTotal: {
           $sum: {
             $multiply: ["$items.price", "$quantity"],
@@ -62,10 +65,12 @@ const addItemsOrUpdateItemQuantity = asyncHandler(async (req, res) => {
   const { productId } = req.params;
   const { quantity } = req.body;
 
+
   // fetch the user cart
   const cart = await Cart.findOne({ owner: req.user._id });
 
   const product = await Product.findById(productId);
+
 
   if (!product) {
     throw new ApiError(404, "Product does not exists");

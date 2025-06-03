@@ -12,16 +12,20 @@ const productSchema = new Schema(
       required: true,
     },
     variant: {
-      size: [
-        {
-          type: Number,
-        },
-      ],
-      colors: [
-        {
-          type: String,
-        },
-      ],
+      size: {
+        type: [
+          {
+            type: Number
+          }
+        ],
+      },
+      colors: {
+        type: [
+          {
+            type: String
+          }
+        ],
+      },
     },
     owner: {
       type: mongoose.Types.ObjectId,
