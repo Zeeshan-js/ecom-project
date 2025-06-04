@@ -37,7 +37,7 @@ function Catalog() {
           <div className="grid grid-cols-4 gap-16 p-5">
             {products.map((item) => (
             <div key={item._id} onClick={() => handleProduct(item)} className="h-40 w-40 border">
-              <img className="h-40 w-40" src={item.mainImage.url} alt="" />
+              <img className="h-40 w-40 object-cover" src={item.mainImage.url} alt="" />
               <p className="font-semibold">{item.name}</p>
               <p>${item.price}</p>
             </div>

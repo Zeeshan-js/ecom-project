@@ -28,8 +28,7 @@ const UploadProduct = ({ open, onClose }) => {
   const [currentImage, setCurrentImage] = useState(null);
 
   const addSize = () => {
-    const size = parseInt(inputSize);
-    if (!isNaN(size) && !product.variant.size.includes(size)) {
+    const size = inputSize
       setProduct((prev) => ({
         ...product,
         variant: {
@@ -37,7 +36,6 @@ const UploadProduct = ({ open, onClose }) => {
           size: [...prev.variant.size, size],
         },
       }));
-    }
     setInputSize("");
   };
 
@@ -61,7 +59,7 @@ const UploadProduct = ({ open, onClose }) => {
         ...prev,
         mainImage: file,
       }));
-      setCurrentImage(URL.createObjectURL(file))
+      setCurrentImage(file)
     } else {
       console.log(file  )
     }
@@ -170,7 +168,7 @@ const UploadProduct = ({ open, onClose }) => {
                           <label className="block mb-1">Add Size</label>
                           <div className="flex gap-2">
                             <input
-                              type="number"
+                              type="text"
                               value={inputSize}
                               onChange={(e) => setInputSize(e.target.value)}
                               className="border px-2 py-1 rounded"
@@ -265,9 +263,9 @@ const UploadProduct = ({ open, onClose }) => {
                           onChange={handleMainImageChange}
                         />
 
-                        {product.mainImage.url && (
+                        {currentImage && (
                           <img
-                            src={currentImage}
+                            src={URL.createObjectURL(currentImage)}
                             alt="Main Preview"
                             className="mt-2 w-48 h-auto rounded shadow"
                           />

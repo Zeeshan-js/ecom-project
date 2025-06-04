@@ -29,6 +29,7 @@ function LandingPage() {
 
   const handleCart = async (item) => {
     await addItemInCart(item._id, 1)
+    alert("Item added to cart")
   }
 
   useEffect(() => {
@@ -41,14 +42,14 @@ function LandingPage() {
       {loading ? (
         <Loader />
       ) : (
-        <div className="grid grid-cols-4 gap-16 p-5">
-          {products.map((item, i) => (
+        <div className="grid grid-cols-2 gap-16 gap-y-32 p-5 place-items-center">
+          {products.slice(0,4).map((item, i) => (
             <div key={i} className="h-40 w-40 border">
             <div
               key={item._id}
               onClick={() => handleProduct(item)}
             >
-              <img className="h-40 w-40" src={item.mainImage.url} alt="" />
+              <img className="h-40 w-40 object-cover" src={item.mainImage.url} alt="" />
               <p className="font-semibold">{item.name}</p>
               <p>${item.price}</p>
             </div>

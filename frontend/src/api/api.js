@@ -56,8 +56,12 @@ const orderProduct = () => {
 };
 
 const addItemInCart = (productId, quantity) => {
-  return apiClient.post(`/cart/items/${productId}`, quantity);
+  return apiClient.post(`/cart/items/${productId}`, { quantity });
 };
+
+const removeCartItem = (productId) => {
+  return apiClient.delete(`cart/${productId}`)
+}
 
 export {
   userLogin,
@@ -69,4 +73,5 @@ export {
   getAllProductItems,
   orderProduct,
   addItemInCart,
+  removeCartItem
 };

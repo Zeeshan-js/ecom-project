@@ -37,7 +37,7 @@ const getCart = async (userId) => {
         },
         cartTotal: {
           $sum: {
-            $multiply: ["$items.price", "$quantity"],
+            $multiply: ["$product.price", "$quantity"]
           },
         },
       },
@@ -63,11 +63,12 @@ const getUserCart = asyncHandler(async (req, res) => {
 
 const addItemsOrUpdateItemQuantity = asyncHandler(async (req, res) => {
   const { productId } = req.params;
-  const { quantity } = req.body;
+  const { quantity = 1 } = req.body;
 
 
   // fetch the user cart
   const cart = await Cart.findOne({ owner: req.user._id });
+
 
   const product = await Product.findById(productId);
 
@@ -76,7 +77,7 @@ const addItemsOrUpdateItemQuantity = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Product does not exists");
   }
 
-  const addedProduct = cart.items.find(
+  const addedProduct = cart.items?.find(
     (item) => item.productId.toString() === productId
   );
 
@@ -86,9 +87,10 @@ const addItemsOrUpdateItemQuantity = asyncHandler(async (req, res) => {
     cart.items.push({ productId, quantity });
   }
 
-  await cart.save({ validateBeforeSave: true });
+  await cart.save({ validateBeforeSave: true})
 
   const newCart = await getCart(req.user._id);
+
 
   return res
     .status(200)
@@ -97,6 +99,7 @@ const addItemsOrUpdateItemQuantity = asyncHandler(async (req, res) => {
 
 const removeItemFromCart = asyncHandler(async (req, res) => {
   const { productId } = req.params;
+
 
   const product = await Product.findById(productId);
 

@@ -43,7 +43,7 @@ const createOrder = asyncHandler(async (req, res) => {
     const { 
         address: { country, state, city, address, pincode },
         payment: { cardNumber, expiryDate, cvv, cardName },
-        orderPrice 
+        orderPrice
     } = req.body;
     const { productId } = req.params;
 

@@ -55,6 +55,7 @@ const Product = () => {
       product.variant.size.length > 0
     ) {
       setSelectedSize(0);
+      console.log(selectedSize)
     }
     if (
       product &&
@@ -63,6 +64,7 @@ const Product = () => {
       product.variant.colors.length > 0
     ) {
       setSelectedColor(0);
+      console.log(selectedColor)
     }
   }, [product]);
 
@@ -80,11 +82,11 @@ const Product = () => {
       {loadingProduct ? (
         <Loader />
       ) : (
-        <div className="flex">
-          <div>
-            <img src={product?.mainImage?.url} alt="" />
+        <div className="flex justify-center">
+          <div  className="h-96 w-auto"> 
+            <img className="h-full" src={product?.mainImage?.url} alt="" />
           </div>
-          <div>
+          <div className="flex flex-col gap-3">
             <h1 className="font-semibold">{product.name}</h1>
             <p>Size</p>
             <div className="flex gap-4">
@@ -94,7 +96,7 @@ const Product = () => {
                   onClick={(e) => {
                     setOrder((prev) => ({
                       ...order,
-                      size: selectedSize,
+                      size: selectedSize[0],
                     }));
                     setSelectedSize(i);
                   }}
@@ -117,7 +119,7 @@ const Product = () => {
                   onClick={(e) => {
                     setOrder((prev) => ({
                       ...order,
-                      color: selectedColor,
+                      color: selectedColor[0],
                     })),
                       setSelectedColor(i);
                   }}
@@ -155,7 +157,9 @@ const Product = () => {
             >
               Buy it now
             </button>
+          <p className="mt-6 font-semibold text-zinc-500">{product.description}</p>
           </div>
+
         </div>
       )}
     </>
