@@ -30,13 +30,19 @@ const AuthProvider = ({ children }) => {
       setIsLoading,
       (res) => {
         const { data } = res;
+        if (!data.accessToken) {
+          throw new Error('No access token received');
+        }
         setUser(data.user);
         setToken(data.accessToken);
         LocalStorage.set("user", data.user);
         LocalStorage.set("token", data.accessToken);
         navigate("/landingPage"); 
       },
-      alert // Display error alerts on request failure
+      (error) => {
+        const errorMessage = error?.response?.data?.message || 'Login failed. Please try again.';
+        alert(errorMessage);
+      }
     );
   };
 

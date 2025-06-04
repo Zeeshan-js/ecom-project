@@ -3,7 +3,7 @@ import { LocalStorage } from "../utils/index.js";
 
 // Create an Axios instance for API requests
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_SERVER_URI,
+  baseURL: import.meta.env.VITE_SERVER_URI || 'http://localhost:3000', // Fallback for development
   withCredentials: true,
   timeout: 120000,
 });
@@ -11,13 +11,26 @@ const apiClient = axios.create({
 // Add an interceptor to set authorization header with user token before requests
 apiClient.interceptors.request.use(
   function (config) {
-    // Retrieve user token from local storage
     const token = LocalStorage.get("token");
-    // Set authorization header with bearer token
-    config.headers.Authorization = `Bearer ${token}`;
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
     return config;
   },
   function (error) {
+    return Promise.reject(error);
+  }
+);
+
+// Add response interceptor to handle token errors
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Token is invalid or expired
+      LocalStorage.clear();
+      window.location.href = '/login';
+    }
     return Promise.reject(error);
   }
 );
