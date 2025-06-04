@@ -1,5 +1,4 @@
 // Importing necessary components and hooks
-import { LockClosedIcon } from "@heroicons/react/20/solid"
 import { useState } from "react"
 import { useAuth } from "../components/AuthContext.jsx"
 
@@ -34,13 +33,12 @@ function Login() {
               name='username'
               value={data.username}
               onChange={handleChange("email")}
-              placeholder="email"
-              type="email"
+              placeholder="username"
+              type="username"
             />
           </div>
 
           <div className="relative">
-            <LockClosedIcon className="absolute top-3 left-3 text-gray-500" />
             <input
               className="w-full border rounded-lg focus:ring focus:ring-blue-600 p-3 pl-12"
               value={data.password}
