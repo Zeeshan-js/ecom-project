@@ -32,7 +32,7 @@ function Login() {
               className="w-full border rounded-lg focus:ring focus:ring-blue-600 p-3 pl-12"
               name='username'
               value={data.username}
-              onChange={handleChange("email")}
+              onChange={handleChange("username")}
               placeholder="username"
               type="username"
             />
