@@ -12,7 +12,7 @@ import Register from "./pages/Register.jsx";
 import { useAuth } from "./components/AuthContext.jsx";
 import Product from "./Product.jsx";
 import CheckoutPage from "./CheckoutPage.jsx";
-
+import ThankYouPage from "./pages/ThankYouPage.jsx";
 function App() {
   const [count, setCount] = useState(0);
 
@@ -91,6 +91,15 @@ function App() {
           element={
             <PrivateRoute>
               <CheckoutPage />
+            </PrivateRoute>
+          }
+        ></Route>
+
+        <Route
+          path="/thank-you"
+          element={
+            <PrivateRoute>
+              <ThankYouPage />
             </PrivateRoute>
           }
         ></Route>
