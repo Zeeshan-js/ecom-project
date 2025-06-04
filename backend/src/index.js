@@ -8,6 +8,8 @@ dotenv.config({
 
 connectDB();
 
-const server = httpServer.listen(process.env.PORT || 3000, () => {
-    console.log("Server is listening on", process.env.PORT || 3000)
+const port = process.env.PORT || 3000
+
+const server = httpServer.listen(port, () => {
+    console.log("Server is listening on", port)
 })
