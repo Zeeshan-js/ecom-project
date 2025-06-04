@@ -14,7 +14,6 @@ import Product from "./Product.jsx";
 import CheckoutPage from "./CheckoutPage.jsx";
 import ThankYouPage from "./pages/ThankYouPage.jsx";
 function App() {
-  const [count, setCount] = useState(0);
 
   const { token, user } = useAuth();
 
