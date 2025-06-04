@@ -29,7 +29,6 @@ function Login() {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="relative">
-            <Mail className="absolute top-3.5 left-3 text-gray-500" />
             <input
               className="w-full border rounded-lg focus:ring focus:ring-blue-600 p-3 pl-12"
               name='username'
@@ -41,7 +40,7 @@ function Login() {
           </div>
 
           <div className="relative">
-            <Lock className="absolute top-3 left-3 text-gray-500" />
+            <LockClosedIcon className="absolute top-3 left-3 text-gray-500" />
             <input
               className="w-full border rounded-lg focus:ring focus:ring-blue-600 p-3 pl-12"
               value={data.password}
