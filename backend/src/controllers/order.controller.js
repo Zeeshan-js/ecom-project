@@ -47,7 +47,6 @@ const createOrder = asyncHandler(async (req, res) => {
     } = req.body;
     const { productId } = req.params;
 
-
     // Validate required fields
     if (!address || !payment || !orderPrice) {
         throw new ApiError(400, "Please provide all required order details");
@@ -64,24 +63,57 @@ const createOrder = asyncHandler(async (req, res) => {
     }
 
     let orderItems;
+    let itemsWithQuantity = [];
+
     if (productId) {
         // If productId is provided, create order for single product
         const product = await Product.findById(productId);
         if (!product) {
             throw new ApiError(404, "Product not found");
         }
+        
+        // Get quantity from request body for single product order
+        const quantity = req.body.quantity || 1;
+        
+        // Check if enough stock is available
+        if (product.stock < quantity) {
+            throw new ApiError(400, `Only ${product.stock} items available in stock`);
+        }
+        
         orderItems = [product];
+        itemsWithQuantity = [{ product, quantity }];
     } else {
         // Otherwise use cart items
         const cart = await getCart(req.user._id);
         if (!cart || !cart.items || cart.items.length === 0) {
             throw new ApiError(400, "No items in cart");
         }
-        orderItems = cart.items;
+
+        // Check stock availability for all cart items
+        for (const item of cart.items) {
+            const product = await Product.findById(item.product._id);
+            if (!product) {
+                throw new ApiError(404, `Product ${item.product.name} not found`);
+            }
+            if (product.stock < item.quantity) {
+                throw new ApiError(400, `Only ${product.stock} items available for ${product.name}`);
+            }
+        }
+        
+        orderItems = cart.items.map(item => item.product);
+        itemsWithQuantity = cart.items.map(item => ({
+            product: item.product,
+            quantity: item.quantity
+        }));
     }
 
     // Process payment
-    const paymentResult = await processPayment({ cardNumber: payment.cardNumber, expiryDate: payment.expiryDate, cvv: payment.cvv, cardName: payment.cardName });
+    const paymentResult = await processPayment({ 
+        cardNumber: payment.cardNumber, 
+        expiryDate: payment.expiryDate, 
+        cvv: payment.cvv, 
+        cardName: payment.cardName 
+    });
 
     if (!paymentResult.success) {
         throw new ApiError(
@@ -90,6 +122,7 @@ const createOrder = asyncHandler(async (req, res) => {
         );
     }
 
+    // Create order
     const order = await Order.create({
         address: {
             country: address.country,
@@ -110,6 +143,18 @@ const createOrder = asyncHandler(async (req, res) => {
         orderPrice,
         status: paymentResult.status
     });
+
+    // Update stock and inventory for each product
+    for (const item of itemsWithQuantity) {
+        await Product.findByIdAndUpdate(
+            item.product._id,
+            {
+                $inc: { stock: -item.quantity }, // Decrease stock by ordered quantity
+                $set: { inventoryCount: item.quantity } // Set inventory count to ordered quantity
+            },
+            { new: true }
+        );
+    }
 
     // Clear cart after successful order creation if ordering from cart
     if (!productId) {

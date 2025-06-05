@@ -21,9 +21,9 @@ const ThankYouPage = () => {
     const fetchOrder = async () => {
       try {
         const response = await orderStatus(orderId);
-        console.log(response);
         if (response.data) {
           setOrder(response.data.data.order);
+          console.log(order)
         } else {
           throw new Error('No order data received');
         }
@@ -143,9 +143,7 @@ const ThankYouPage = () => {
                         <h3 className="text-sm font-medium text-gray-900">{item.name}</h3>
                         <p className="mt-1 text-sm text-gray-500">Quantity: {item.stock}</p>
                       </div>
-                      <div className="text-sm font-medium text-gray-900">
-                        ${(item.price * item.stock).toFixed(2)}
-                      </div>
+                      {console.log(item)}
                     </div>
                   </li>
                 ))}

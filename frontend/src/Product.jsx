@@ -11,6 +11,7 @@ const Product = () => {
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState(null);
   const [selectedColor, setSelectedColor] = useState(null);
+  const [stockWarning, setStockWarning] = useState('');
 
   const navigate = useNavigate();
   const { productId } = useParams();
@@ -37,6 +38,11 @@ const Product = () => {
   const handleProduct = () => {
     if (!selectedSize || !selectedColor) {
       alert("Please select both size and color");
+      return;
+    }
+
+    if (quantity > product.stock) {
+      setStockWarning(`Only ${product.stock} left in stock`);
       return;
     }
 
@@ -154,23 +160,42 @@ const Product = () => {
                     {/* Quantity Selection */}
                     <div>
                       <h3 className="text-sm font-medium text-gray-900 mb-4">Quantity</h3>
-                      <div className="inline-flex items-center border border-gray-200 rounded-lg">
-                        <button
-                          className="p-3 hover:bg-gray-100 transition-colors disabled:opacity-50"
-                          onClick={() => quantity > 1 && setQuantity(q => q - 1)}
-                          disabled={quantity <= 1}
-                        >
-                          <MinusIcon className="h-5 w-5 text-gray-600" />
-                        </button>
-                        <span className="px-6 py-2 text-gray-900 font-medium">
-                          {quantity}
-                        </span>
-                        <button
-                          className="p-3 hover:bg-gray-100 transition-colors"
-                          onClick={() => setQuantity(q => q + 1)}
-                        >
-                          <PlusIcon className="h-5 w-5 text-gray-600" />
-                        </button>
+                      <div className="space-y-2">
+                        <div className="inline-flex items-center border border-gray-200 rounded-lg">
+                          <button
+                            className="p-3 hover:bg-gray-100 transition-colors disabled:opacity-50"
+                            onClick={() => {
+                              setQuantity(q => q - 1);
+                              setStockWarning('');
+                            }}
+                            disabled={quantity <= 1}
+                          >
+                            <MinusIcon className="h-5 w-5 text-gray-600" />
+                          </button>
+                          <span className="px-6 py-2 text-gray-900 font-medium">
+                            {quantity}
+                          </span>
+                          <button
+                            className="p-3 hover:bg-gray-100 transition-colors disabled:opacity-50"
+                            onClick={() => {
+                              if (quantity < product.stock) {
+                                setQuantity(q => q + 1);
+                                setStockWarning('');
+                              } else {
+                                setStockWarning(`Only ${product.stock} left in stock`);
+                              }
+                            }}
+                            disabled={quantity >= product.stock}
+                          >
+                            <PlusIcon className="h-5 w-5 text-gray-600" />
+                          </button>
+                        </div>
+                        {stockWarning && (
+                          <p className="text-sm text-amber-600">{stockWarning}</p>
+                        )}
+                        <p className="text-sm text-gray-500">
+                          {product.stock} available
+                        </p>
                       </div>
                     </div>
                   </div>
