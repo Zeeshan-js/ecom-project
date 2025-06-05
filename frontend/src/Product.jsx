@@ -15,13 +15,6 @@ const Product = () => {
   const navigate = useNavigate();
   const { productId } = useParams();
 
-  const [order, setOrder] = useState({
-    product: null,
-    size: null,
-    colors: null,
-    quantity: 1,
-  });
-
   const productById = async () => {
     await requestHandler(
       async () => await getProduct(productId),
@@ -46,23 +39,36 @@ const Product = () => {
       alert("Please select both size and color");
       return;
     }
-    navigate("/checkout", { state: { order } });
+
+    const orderData = {
+      items: [{
+        product: {
+          _id: product._id,
+          name: product.name,
+          price: product.price,
+          mainImage: product.mainImage
+        },
+        quantity: quantity,
+        selectedVariant: {
+          size: selectedSize,
+          color: selectedColor
+        }
+      }],
+      totalAmount: product.price * quantity
+    };
+
+    console.log("Navigating to checkout with order data:", orderData);
+    
+    navigate("/checkout", { 
+      state: { 
+        order: orderData 
+      } 
+    });
   };
 
   useEffect(() => {
     productById();
   }, []);
-
-  useEffect(() => {
-    if (product) {
-      setOrder({
-        product: product,
-        size: selectedSize,
-        colors: selectedColor,
-        quantity: quantity,
-      });
-    }
-  }, [product, selectedColor, selectedSize, quantity]);
 
   if (loadingProduct) {
     return (

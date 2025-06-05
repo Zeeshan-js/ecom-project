@@ -64,9 +64,13 @@ const uploadProduct = (formData) => {
   return apiClient.post("/product/upload", formData);
 };
 
-const orderProduct = () => {
-  return apiClient.post();
+const orderProduct = (data) => {
+  return apiClient.post("/order/make", data);
 };
+
+const orderStatus = (orderId) => {
+  return apiClient.get(`${orderId}/status`)
+}
 
 const addItemInCart = (productId, quantity) => {
   return apiClient.post(`/cart/items/${productId}`, { quantity });
@@ -86,5 +90,6 @@ export {
   getAllProductItems,
   orderProduct,
   addItemInCart,
-  removeCartItem
+  removeCartItem,
+  orderStatus
 };
