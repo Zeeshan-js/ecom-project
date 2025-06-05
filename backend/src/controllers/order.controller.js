@@ -41,15 +41,26 @@ const processPayment = async (paymentDetails) => {
 
 const createOrder = asyncHandler(async (req, res) => {
     const { 
-        address: { country, state, city, address, pincode },
-        payment: { cardNumber, expiryDate, cvv, cardName },
+        address,
+        payment,
         orderPrice
     } = req.body;
     const { productId } = req.params;
 
+
     // Validate required fields
     if (!address || !payment || !orderPrice) {
         throw new ApiError(400, "Please provide all required order details");
+    }
+
+    // Validate nested address fields
+    if (!address.country || !address.state || !address.city || !address.address || !address.pincode) {
+        throw new ApiError(400, "Please provide all address details");
+    }
+
+    // Validate nested payment fields
+    if (!payment.cardNumber || !payment.expiryDate || !payment.cvv || !payment.cardName) {
+        throw new ApiError(400, "Please provide all payment details");
     }
 
     let orderItems;
@@ -70,7 +81,7 @@ const createOrder = asyncHandler(async (req, res) => {
     }
 
     // Process payment
-    const paymentResult = await processPayment({ cardNumber, expiryDate, cvv, cardName });
+    const paymentResult = await processPayment({ cardNumber: payment.cardNumber, expiryDate: payment.expiryDate, cvv: payment.cvv, cardName: payment.cardName });
 
     if (!paymentResult.success) {
         throw new ApiError(
@@ -81,17 +92,17 @@ const createOrder = asyncHandler(async (req, res) => {
 
     const order = await Order.create({
         address: {
-            country,
-            state,
-            city,
-            address,
-            pincode
+            country: address.country,
+            state: address.state,
+            city: address.city,
+            address: address.address,
+            pincode: address.pincode
         },
         payment: {
-            cardNumber,
-            expiryDate,
-            cvv,
-            cardName,
+            cardNumber: payment.cardNumber,
+            expiryDate: payment.expiryDate,
+            cvv: payment.cvv,
+            cardName: payment.cardName,
             status: paymentResult.status
         },
         customer: req.user._id,
@@ -114,7 +125,7 @@ const createOrder = asyncHandler(async (req, res) => {
             {
                 order: order._id,
                 paymentStatus: paymentResult.status,
-                redirectUrl: `/api/v1/orders/${order._id}/status`
+                redirectUrl: `/api/v1/${order._id}/status`
             },
             paymentResult.message
         )

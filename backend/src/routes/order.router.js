@@ -6,8 +6,10 @@ const router = Router()
 
     router.use(verifyJWT)
 
-    router.route("/make").post(createOrder)
+    router.route("/make/:productId").post(createOrder)
 
-    router.route("/:orderId/status", getOrderStatus)
+    router.route("/thank-you/:orderId").get(getOrderStatus)
+
+    router.route("/:orderId/status").get(getOrderStatus)
 
 export default router

@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import Loader from '../components/Loader';
-import { CheckCircleIcon } from "@heroicons/react/24/outline";
-import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
+import { orderStatus } from '../api/api.js';
 
 const ThankYouPage = () => {
   const [searchParams] = useSearchParams();
@@ -18,13 +17,19 @@ const ThankYouPage = () => {
       return;
     }
 
+
     const fetchOrder = async () => {
       try {
         const response = await orderStatus(orderId);
-        setOrder(response.data.data.order);
+        console.log(response);
+        if (response.data) {
+          setOrder(response.data.data.order);
+        } else {
+          throw new Error('No order data received');
+        }
       } catch (error) {
         console.error('Error fetching order:', error);
-        setError(error.response?.data?.message || 'Failed to fetch order details');
+        setError(error.message || 'Failed to fetch order details');
       } finally {
         setLoading(false);
       }
@@ -136,10 +141,10 @@ const ThankYouPage = () => {
                       />
                       <div className="flex-1">
                         <h3 className="text-sm font-medium text-gray-900">{item.name}</h3>
-                        <p className="mt-1 text-sm text-gray-500">Quantity: {item.quantity}</p>
+                        <p className="mt-1 text-sm text-gray-500">Quantity: {item.stock}</p>
                       </div>
                       <div className="text-sm font-medium text-gray-900">
-                        ${(item.price * item.quantity).toFixed(2)}
+                        ${(item.price * item.stock).toFixed(2)}
                       </div>
                     </div>
                   </li>

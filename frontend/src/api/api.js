@@ -3,7 +3,7 @@ import { LocalStorage } from "../utils/index.js";
 
 // Create an Axios instance for API requests
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_SERVER_URI || 'http://localhost:3000', // Fallback for development
+  baseURL: (import.meta.env.VITE_SERVER_URI || 'http://localhost:3000'), // Add API version prefix
   withCredentials: true,
   timeout: 120000,
 });
@@ -64,13 +64,13 @@ const uploadProduct = (formData) => {
   return apiClient.post("/product/upload", formData);
 };
 
-const orderProduct = (data) => {
-  return apiClient.post("/order/make", data);
+const orderProduct = (productId,data) => {
+  return apiClient.post(`/order/make/${productId}`, data);
 };
 
 const orderStatus = (orderId) => {
-  return apiClient.get(`${orderId}/status`)
-}
+  return apiClient.get(`/order/${orderId}/status`);
+};
 
 const addItemInCart = (productId, quantity) => {
   return apiClient.post(`/cart/items/${productId}`, { quantity });
