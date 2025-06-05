@@ -34,7 +34,7 @@ function Login() {
               value={data.username}
               onChange={handleChange("username")}
               placeholder="username"
-              type="username"
+              type="text"
             />
           </div>
 

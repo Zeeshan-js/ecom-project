@@ -25,13 +25,9 @@ function App() {
           path="/"
           element={
             token && user?._id ? (
-              <PrivateRoute>
-                <LandingPage />
-              </PrivateRoute>
+              <Navigate to="/landingPage"/>
             ) : (
-              <PublicRoute>
-                <Login />
-              </PublicRoute>
+              <Navigate to="/login"/>
             )
           }
         ></Route>
