@@ -63,7 +63,6 @@ const Product = () => {
       totalAmount: product.price * quantity
     };
 
-    console.log("Navigating to checkout with order data:", orderData);
     
     navigate("/checkout", { 
       state: { 
