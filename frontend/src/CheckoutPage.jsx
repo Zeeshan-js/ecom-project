@@ -92,6 +92,7 @@ const CheckoutPage = () => {
       const orderPayload = {
         items: order.items.map((item) => item.product._id),
         orderPrice: order.totalAmount,
+        email: formData.email,
         address: {
           country: formData.country,
           city: formData.city,

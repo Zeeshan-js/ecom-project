@@ -143,7 +143,6 @@ const ThankYouPage = () => {
                         <h3 className="text-sm font-medium text-gray-900">{item.name}</h3>
                         <p className="mt-1 text-sm text-gray-500">Quantity: {item.stock}</p>
                       </div>
-                      {console.log(item)}
                     </div>
                   </li>
                 ))}

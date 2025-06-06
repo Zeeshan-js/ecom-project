@@ -4,6 +4,7 @@ import { Product } from "../models/product.model.js";
 import { ApiError } from "../utils/ApiError.js"
 import { ApiResponse } from "../utils/ApiResponse.js"
 import { asyncHandler } from "../utils/asyncHandler.js"
+import { sendSuccessEmail, sendFailureEmail } from "../utils/mailService.js"
 import { getCart } from "./cart.controller.js";
 
 // Payment processing simulation
@@ -43,13 +44,15 @@ const createOrder = asyncHandler(async (req, res) => {
     const { 
         address,
         payment,
-        orderPrice
+        orderPrice,
+        email,
+        customerName
     } = req.body;
     const { productId } = req.params;
 
     // Validate required fields
-    if (!address || !payment || !orderPrice) {
-        throw new ApiError(400, "Please provide all required order details");
+    if (!address || !payment || !orderPrice || !email) {
+        throw new ApiError(400, "Please provide all required order details including email");
     }
 
     // Validate nested address fields
@@ -116,6 +119,12 @@ const createOrder = asyncHandler(async (req, res) => {
     });
 
     if (!paymentResult.success) {
+        // Send failure email using provided email
+        await sendFailureEmail(
+            email,
+            customerName || 'Valued Customer'
+        );
+
         throw new ApiError(
             paymentResult.status === "GATEWAY_ERROR" ? 503 : 400,
             paymentResult.message
@@ -141,7 +150,8 @@ const createOrder = asyncHandler(async (req, res) => {
         customer: req.user._id,
         items: orderItems,
         orderPrice,
-        status: paymentResult.status
+        status: paymentResult.status,
+        email: email
     });
 
     // Update stock and inventory for each product
@@ -163,6 +173,21 @@ const createOrder = asyncHandler(async (req, res) => {
             { $set: { items: [] } }
         );
     }
+
+    // Send success email using provided email
+    await sendSuccessEmail({
+        orderNumber: order._id,
+        products: itemsWithQuantity.map(item => ({
+            name: item.product.name,
+            quantity: item.quantity,
+            price: item.product.price
+        })),
+        customerInfo: {
+            name: customerName || payment.cardName || 'Valued Customer',
+            email: email,
+            shippingAddress: `${address.address}, ${address.city}, ${address.state}, ${address.country}, ${address.pincode}`
+        }
+    });
 
     return res.status(201).json(
         new ApiResponse(
