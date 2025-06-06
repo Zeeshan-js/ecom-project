@@ -26,6 +26,11 @@ function Login() {
       <div className="w-full h-1/2 max-w-sm border rounded-3xl p-4">
         <h2 className="text-center font-bold mb-4 text-2xl">Login</h2>
 
+        <div>
+          <p>Username:- "one"</p>
+          <p>Password:-  "one"</p>
+        </div>
+
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="relative">
             <input
