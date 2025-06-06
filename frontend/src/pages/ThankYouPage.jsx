@@ -23,7 +23,6 @@ const ThankYouPage = () => {
         const response = await orderStatus(orderId);
         if (response.data) {
           setOrder(response.data.data.order);
-          console.log(response)
         } else {
           throw new Error('No order data received');
         }
