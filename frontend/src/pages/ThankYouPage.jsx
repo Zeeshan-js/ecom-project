@@ -23,7 +23,7 @@ const ThankYouPage = () => {
         const response = await orderStatus(orderId);
         if (response.data) {
           setOrder(response.data.data.order);
-          console.log(order)
+          console.log(response)
         } else {
           throw new Error('No order data received');
         }
@@ -141,7 +141,7 @@ const ThankYouPage = () => {
                       />
                       <div className="flex-1">
                         <h3 className="text-sm font-medium text-gray-900">{item.name}</h3>
-                        <p className="mt-1 text-sm text-gray-500">Quantity: {item.stock}</p>
+                        <p className="mt-1 text-sm text-gray-500">Quantity: {item.inventoryCount}</p>
                       </div>
                     </div>
                   </li>
